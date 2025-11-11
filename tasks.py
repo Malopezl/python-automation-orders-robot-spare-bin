@@ -5,7 +5,7 @@ from RPA.HTTP import HTTP
 from RPA.Tables import Tables
 from RPA.PDF import PDF
 from RPA.Archive import Archive
-
+from RPA.Assistant import Assistant
 @task
 def order_robots_from_RobotSpareBin():
     """
@@ -16,15 +16,25 @@ def order_robots_from_RobotSpareBin():
     Creates ZIP archive of the receipts and the images.
     """
     browser.configure(slowmo=500)
-    open_robot_order_website()
+    user_input_csv_url()
     orders = get_orders()
     for row in orders:
         fill_the_form(row)
     archive_receipts()
 
-def open_robot_order_website():
+def user_input_csv_url():
+    """Asks the user for the CSV URL containing robot orders."""
+    assistant = Assistant()
+    assistant.add_heading("Input from user")
+    assistant.add_text_input("text_input", placeholder="Please enter the CSV URL")
+    assistant.add_submit_buttons("Submit", default="Submit")
+    result = assistant.run_dialog()
+    url = result.text_input
+    open_robot_order_website(url)
+
+def open_robot_order_website(url):
     """Navigates to the RobotSpareBin Industries Inc. website."""
-    browser.goto("https://robotsparebinindustries.com/#/robot-order")
+    browser.goto(url)
 
 def give_conscent():
     """Gives consent to cookies."""
